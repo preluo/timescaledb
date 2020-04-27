@@ -71,6 +71,7 @@
 
 TS_FUNCTION_INFO_V1(ts_chunk_show_chunks);
 TS_FUNCTION_INFO_V1(ts_chunk_drop_chunks);
+TS_FUNCTION_INFO_V1(ts_pg_chunk_drop);
 TS_FUNCTION_INFO_V1(ts_chunks_in);
 TS_FUNCTION_INFO_V1(ts_chunk_id_from_relid);
 TS_FUNCTION_INFO_V1(ts_chunk_dml_blocker);
@@ -2284,14 +2285,18 @@ ts_chunk_get_by_relid(Oid relid, bool fail_if_not_found)
 }
 
 Chunk *
-ts_chunk_get_by_id(int32 id, bool fail_if_not_found)
+ts_chunk_get_by_id(int32 chunk_id, bool fail_if_not_found)
 {
 	ScanKeyData scankey[1];
 
 	/*
 	 * Perform an index scan on chunk id.
 	 */
-	ScanKeyInit(&scankey[0], Anum_chunk_idx_id, BTEqualStrategyNumber, F_INT4EQ, Int32GetDatum(id));
+	ScanKeyInit(&scankey[0],
+				Anum_chunk_idx_id,
+				BTEqualStrategyNumber,
+				F_INT4EQ,
+				Int32GetDatum(chunk_id));
 
 	return chunk_scan_find(CHUNK_ID_INDEX, scankey, 1, CurrentMemoryContext, fail_if_not_found);
 }
@@ -3240,6 +3245,15 @@ ts_chunk_drop_process_materialization(Oid hypertable_relid,
 /* Continuous agg materialization hypertables can be dropped
  * only if a user explicitly specifies the table name
  */
+Datum
+ts_pg_chunk_drop(PG_FUNCTION_ARGS)
+{
+	int32 chunk_id = PG_GETARG_INT32(0);
+	Chunk *chunk = ts_chunk_get_by_id(chunk_id, 0, true);
+	ts_chunk_drop(chunk, DROP_RESTRICT, DEBUG1);
+	PG_RETURN_INT32(chunk_id);
+}
+
 List *
 ts_chunk_do_drop_chunks(Oid table_relid, Datum older_than_datum, Datum newer_than_datum,
 						Oid older_than_type, Oid newer_than_type, bool cascade,
