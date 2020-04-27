@@ -187,6 +187,10 @@ Datum
 ts_test_ddl_command_hook_reg(PG_FUNCTION_ARGS)
 {
 	Assert(ts_cm_functions->ddl_command_start == NULL);
+
+	/* remove me */
+	abort();
+
 	ts_cm_functions->ddl_command_start = test_ddl_command_start;
 	ts_cm_functions->ddl_command_end = test_ddl_command_end;
 	ts_cm_functions->sql_drop = test_sql_drop;
