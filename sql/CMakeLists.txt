@@ -21,35 +21,35 @@ set(IMMUTABLE_API_SOURCE_FILES
 
 # The rest of the source files defining mostly functions
 set(SOURCE_FILES
-  pre_install/types.functions.sql
-  hypertable.sql
-  chunk.sql
-  ddl_internal.sql
-  edition.sql
-  util_time.sql
-  util_internal_table_ddl.sql
-  chunk_constraint.sql
-  hypertable_constraint.sql
-  partitioning.sql
-  schema_info.sql
-  ddl_api.sql
-  ddl_triggers.sql
-  bookend.sql
-  time_bucket.sql
-  version.sql
-  size_utils.sql
-  histogram.sql
-  cache.sql
   bgw_scheduler.sql
-  metadata.sql
+  bookend.sql
+  cache.sql
+  chunk.sql
+  chunk_constraint.sql
   data_node.sql
+  ddl_api.sql
+  ddl_internal.sql
+  ddl_triggers.sql
   dist_internal.sql
-  views.sql
+  edition.sql
   gapfill.sql
+  histogram.sql
+  hypertable.sql
+  hypertable_constraint.sql
   maintenance_utils.sql
+  metadata.sql
+  operators.sql
   partialize_finalize.sql
+  partitioning.sql
   restoring.sql
+  schema_info.sql
+  size_utils.sql
+  time_bucket.sql
   timescaledb_fdw.sql
+  util_internal_table_ddl.sql
+  util_time.sql
+  version.sql
+  views.sql
 )
 
 if (NOT ${PG_VERSION} VERSION_LESS "10")

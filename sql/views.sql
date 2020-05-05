@@ -25,6 +25,23 @@ CREATE OR REPLACE VIEW timescaledb_information.hypertable_size_info AS
       CASE WHEN has_schema_privilege(ht.schema_name,'USAGE') THEN format('%I.%I',ht.schema_name,ht.table_name) ELSE NULL END
     ) bsize ON true;
 
+-- View to provide some information about chunks
+-- chunk_id     Chunk ID
+-- lower_bound  Lower time constraint bound for chunk
+-- upper_bound  Upper time constraint bound for chunk
+-- hypertable   Hypertable that the chunk belongs to
+CREATE OR REPLACE VIEW timescaledb_information.chunks AS
+SELECT format('%1$I.%2$I', ch.schema_name, ch.table_name)::regclass AS chunk_id
+     , format('%1$I.%2$I', ht.schema_name, ht.table_name)::regclass AS hypertable_id
+     , tstzrange(TIMESTAMPTZ 'epoch' + sl.range_start * INTERVAL '1 microsecond',
+     ,           TIMESTAMPTZ 'epoch' + sl.range_end * INTERVAL '1 microsecond') AS time_range
+  FROM _timescaledb_catalog.chunk ch
+  JOIN _timescaledb_catalog.hypertable ht ON ch.hypertable_id = ht.id
+  JOIN _timescaledb_catalog.dimension di ON di.hypertable_id = ht.id
+  JOIN _timescaledb_catalog.chunk_constraint cn ON cn.chunk_id = ch.id
+  JOIN _timescaledb_catalog.dimension_slice sl ON cn.dimension_slice_id = sl.id
+ WHERE column_type = 'timestamptz'::regtype;
+
 -- Convenience view to list all hypertables and their space usage
 CREATE OR REPLACE VIEW timescaledb_information.hypertable AS
 WITH ht_size as (
