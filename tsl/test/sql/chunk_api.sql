@@ -164,6 +164,29 @@ SELECT * FROM pg_stats WHERE tablename IN
 (SELECT (_timescaledb_internal.show_chunk(show_chunks)).table_name FROM show_chunks('disttable'))
 ORDER BY 1,2,3;
 
+-- Test drop_chunks functions
+CREATE TABLE conditions(
+    time TIMESTAMPTZ NOT NULL,
+    device INTEGER,
+    temperature FLOAT
+);
+SELECT * FROM create_hypertable('conditions', 'time',
+       chunk_time_interval => INTERVAL '1 day');
+
+INSERT INTO conditions
+SELECT time, (random()*30)::int, random()*80 - 40
+FROM generate_series(TIMESTAMPTZ '2018-01-01 05:00:00Z',
+                     TIMESTAMPTZ '2018-04-01 05:00:00Z', '10 min') AS time;
+
+SELECT COUNT(*) FROM timescaledb_information.chunks;
+
+SELECT COUNT(drop_chunk(chunk_id))
+  FROM timescaledb_information.chunks
+ WHERE hypertable_id = 'conditions'::regclass
+   AND time_range << TIMESTAMPTZ '2018-02-01 05:00:00Z' ;
+
+SELECT COUNT(*) FROM timescaledb_information.chunks;
+
 -- Check underlying pg_statistics table (looking at all columns except
 -- starelid, which changes depending on how many tests are run before
 -- this)

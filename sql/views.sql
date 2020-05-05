@@ -34,7 +34,7 @@ CREATE OR REPLACE VIEW timescaledb_information.chunks AS
 SELECT format('%1$I.%2$I', ch.schema_name, ch.table_name)::regclass AS chunk_id
      , format('%1$I.%2$I', ht.schema_name, ht.table_name)::regclass AS hypertable_id
      , tstzrange(TIMESTAMPTZ 'epoch' + sl.range_start * INTERVAL '1 microsecond',
-     ,           TIMESTAMPTZ 'epoch' + sl.range_end * INTERVAL '1 microsecond') AS time_range
+                 TIMESTAMPTZ 'epoch' + sl.range_end * INTERVAL '1 microsecond') AS time_range
   FROM _timescaledb_catalog.chunk ch
   JOIN _timescaledb_catalog.hypertable ht ON ch.hypertable_id = ht.id
   JOIN _timescaledb_catalog.dimension di ON di.hypertable_id = ht.id

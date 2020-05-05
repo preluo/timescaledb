@@ -9,16 +9,28 @@
 --
 -- These are used to extend the timestamp ranges to also allow a
 -- timestamp to denote a (very small) range in comparisons.
-CREATE FUNCTION cmp_ts_rng(TIMESTAMP, TSRANGE)
+CREATE FUNCTION before_ts_rng(TIMESTAMP, TSRANGE)
 RETURNS boolean
 AS $$ SELECT TSRANGE($1,$1, '[]') << $2 $$
 LANGUAGE SQL STABLE;
 
-CREATE FUNCTION cmp_tstz_rng(TIMESTAMPTZ, TSTZRANGE)
+CREATE FUNCTION before_ts_rng(TIMESTAMPTZ, TSTZRANGE)
 RETURNS boolean
 AS $$ SELECT TSTZRANGE($1,$1, '[]') << $2 $$
 LANGUAGE SQL STABLE;
 
-CREATE OPERATOR <<(procedure = cmp_ts_rng, leftarg = timestamp, rightarg = tsrange);
-CREATE OPERATOR <<(procedure = cmp_tstz_rng, leftarg = timestamptz, rightarg = tstzrange);
+CREATE FUNCTION before_ts_rng(TSRANGE, TIMESTAMP)
+RETURNS boolean
+AS $$ SELECT $1 << TSRANGE($2,$2, '[]') $$
+LANGUAGE SQL STABLE;
+
+CREATE FUNCTION before_ts_rng(TSTZRANGE, TIMESTAMPTZ)
+RETURNS boolean
+AS $$ SELECT $1 << TSTZRANGE($2,$2, '[]') $$
+LANGUAGE SQL STABLE;
+
+CREATE OPERATOR <<(procedure = before_ts_rng, leftarg = timestamp, rightarg = tsrange);
+CREATE OPERATOR <<(procedure = before_ts_rng, leftarg = timestamptz, rightarg = tstzrange);
+CREATE OPERATOR <<(procedure = before_ts_rng, leftarg = tsrange, rightarg = timestamp);
+CREATE OPERATOR <<(procedure = before_ts_rng, leftarg = tstzrange, rightarg = timestamptz);
 

@@ -3249,7 +3249,7 @@ Datum
 ts_pg_chunk_drop(PG_FUNCTION_ARGS)
 {
 	int32 chunk_id = PG_GETARG_INT32(0);
-	Chunk *chunk = ts_chunk_get_by_id(chunk_id, 0, true);
+	Chunk *chunk = ts_chunk_get_by_relid(chunk_id, 0, true);
 	ts_chunk_drop(chunk, DROP_RESTRICT, DEBUG1);
 	PG_RETURN_INT32(chunk_id);
 }

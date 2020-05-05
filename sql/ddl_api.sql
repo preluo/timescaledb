@@ -119,8 +119,8 @@ CREATE OR REPLACE FUNCTION show_chunks(
 ) RETURNS SETOF REGCLASS AS '@MODULE_PATHNAME@', 'ts_chunk_show_chunks'
 LANGUAGE C STABLE PARALLEL SAFE;
 
--- Drop an individual chunk by chunk id
-CREATE OR REPLACE FUNCTION drop_chunk(chunk_id INT)
+-- Drop an individual chunk by chunk identifier
+CREATE OR REPLACE FUNCTION drop_chunk(chunk_id REGCLASS)
 RETURNS INTEGER AS '@MODULE_PATHNAME@', 'ts_pg_chunk_drop'
 LANGUAGE C VOLATILE STRICT PARALLEL SAFE;
 
