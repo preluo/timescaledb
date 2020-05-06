@@ -23,11 +23,10 @@ ORDER BY proname;
  alter_job_schedule
  attach_data_node
  attach_tablespace
+ before_ts_rng
  block_new_chunks
  chunk_relation_size
  chunk_relation_size_pretty
- cmp_ts_rng
- cmp_tstz_rng
  compress_chunk
  create_distributed_hypertable
  create_hypertable
@@ -70,5 +69,5 @@ ORDER BY proname;
  timescaledb_fdw_validator
  timescaledb_post_restore
  timescaledb_pre_restore
-(56 rows)
+(55 rows)
 
